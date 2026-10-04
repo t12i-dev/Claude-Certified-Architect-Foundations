@@ -4,14 +4,18 @@ import {
     addUserMessage,
     chat,
     type Message,
-} from "./lib.ts";
+} from "./lib.js";
 
-// Built with repeat() so we don't have to escape backticks inside template literals
+// Built with repeat() so we don't have to escape backticks in template literals
 const FENCE = "`".repeat(3);
 
-type Task = { task: string };
+const FORMATS = ["python", "json", "regex"] as const;
+type Format = (typeof FORMATS)[number];
 
-async function generateDataset(count = 3): Promise<Task[]> {
+// "format" tells the code grader which syntax validator to use later
+type Task = { task: string; format: Format };
+
+async function generateDataset(count = 6): Promise<Task[]> {
     const prompt = `
 Generate an evaluation dataset for a prompt evaluation. The dataset will be used to evaluate prompts that generate Python, JSON, or Regex specifically for AWS-related tasks. Generate an array of JSON objects, each representing a task that requires Python, JSON, or a Regex to complete.
 
@@ -19,13 +23,16 @@ Example output:
 ${FENCE}json
 [
   {
-    "task": "Description of task"
+    "task": "Description of task",
+    "format": "python"
   }
 ]
 ${FENCE}
 
 * Focus on tasks that can be solved by writing a single Python function, a single JSON object, or a single regex
 * Focus on tasks that do not require writing much code
+* "format" must be exactly one of: "python", "json", "regex"
+* Include a mix of all three formats
 
 Please generate ${count} objects.
 `;
@@ -38,19 +45,29 @@ Please generate ${count} objects.
 
     const data: unknown = JSON.parse(text.trim());
 
-    // Basic sanity check: every record must have a string "task" field
+    // Sanity check: every record needs a string "task" and a known "format"
     if (
         !Array.isArray(data) ||
-        !data.every((item) => typeof item?.task === "string")
+        !data.every(
+            (item) =>
+                typeof item?.task === "string" &&
+                (FORMATS as readonly string[]).includes(item?.format),
+        )
     ) {
         throw new Error("Malformed dataset returned by the model");
     }
     return data as Task[];
 }
 
-const dataset = await generateDataset(3);
+const dataset = await generateDataset(6);
 console.log(JSON.stringify(dataset, null, 2));
 
-// Save so the next lessons (running the eval) can load it
+// Count per format, to confirm the dataset isn't lopsided
+const counts = Object.fromEntries(
+    FORMATS.map((f) => [f, dataset.filter((t) => t.format === f).length]),
+);
+console.log("\nFormat counts:", counts);
+
+// Save so the eval scripts can load it
 writeFileSync("dataset.json", JSON.stringify(dataset, null, 2));
-console.log(`\nSaved ${dataset.length} records to dataset.json`);
+console.log(`Saved ${dataset.length} records to dataset.json`);

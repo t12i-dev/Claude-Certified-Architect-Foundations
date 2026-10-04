@@ -1,11 +1,26 @@
 [
   {
-    "task": "Write a Python function that parses an AWS S3 bucket name from an S3 URI (e.g., 's3://my-bucket/path/to/file.txt') and returns just the bucket name."
+    "task": "Create a regex pattern to validate AWS S3 bucket names (must be 3-63 characters, lowercase letters, numbers, and hyphens only, cannot start or end with hyphen)",
+    "format": "regex"
   },
   {
-    "task": "Create a JSON object that represents an AWS IAM policy allowing read-only access to a specific DynamoDB table named 'users-table'."
+    "task": "Write a Python function that takes an AWS CloudFormation template dictionary and returns a list of all resource logical IDs",
+    "format": "python"
   },
   {
-    "task": "Write a regex pattern that matches valid AWS EC2 instance IDs (format: i- followed by 17 hexadecimal characters)."
+    "task": "Create a JSON object representing an AWS IAM policy that allows read-only access to all objects in an S3 bucket named 'my-data-bucket'",
+    "format": "json"
+  },
+  {
+    "task": "Write a Python function that extracts the region from an AWS ARN string (e.g., 'arn:aws:s3:us-east-1:123456789012:bucket/my-bucket')",
+    "format": "python"
+  },
+  {
+    "task": "Create a regex pattern to match AWS EC2 instance IDs (format: i- followed by 17 hexadecimal characters)",
+    "format": "regex"
+  },
+  {
+    "task": "Create a JSON object representing an AWS Lambda function configuration with environment variables, timeout, and memory settings",
+    "format": "json"
   }
 ]
