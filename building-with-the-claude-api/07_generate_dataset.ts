@@ -1,51 +1,13 @@
-import Anthropic from "@anthropic-ai/sdk";
-import "dotenv/config"; // loads .env into process.env
 import { writeFileSync } from "node:fs";
-
-const client = new Anthropic(); // reads ANTHROPIC_API_KEY from env
-
-// Dataset generation is simple, high-volume work, so a fast/cheap model is enough
-const model = "claude-haiku-4-5-20251001";
+import {
+    addAssistantMessage,
+    addUserMessage,
+    chat,
+    type Message,
+} from "./lib.ts";
 
 // Built with repeat() so we don't have to escape backticks inside template literals
 const FENCE = "`".repeat(3);
-
-type Message = Anthropic.MessageParam;
-
-type ChatOptions = {
-    system?: string;
-    temperature?: number;
-    stopSequences?: string[];
-};
-
-function addUserMessage(messages: Message[], text: string) {
-    messages.push({ role: "user", content: text });
-}
-
-function addAssistantMessage(messages: Message[], text: string) {
-    messages.push({ role: "assistant", content: text });
-}
-
-async function chat(
-    messages: Message[],
-    { system, temperature = 1.0, stopSequences }: ChatOptions = {},
-): Promise<string> {
-    const response = await client.messages.create({
-        model,
-        max_tokens: 1000,
-        messages,
-        temperature,
-        system,
-        stop_sequences: stopSequences,
-    });
-
-    // response.content is an array of blocks, so TS forces us to narrow the type
-    const block = response.content[0];
-    if (block.type !== "text") {
-        throw new Error(`Expected a text block, got: ${block.type}`);
-    }
-    return block.text;
-}
 
 type Task = { task: string };
 
