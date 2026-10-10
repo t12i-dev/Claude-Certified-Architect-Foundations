@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt Evaluation Report</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; background: #f0f0f0; color: #222; }
+  header { padding: 24px 32px 8px; }
+  h1 { margin: 0 0 16px; }
+  .cards { display: flex; gap: 16px; flex-wrap: wrap; padding: 0 32px 24px; }
+  .card { background: #fff; border-radius: 8px; padding: 14px 20px; min-width: 200px; flex: 1; }
+  .card .label { font-size: 13px; color: #555; }
+  .card .value { font-size: 24px; font-weight: 700; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; background: #fff; table-layout: fixed; }
+  th { background: #2d2d2d; color: #fff; text-align: left; padding: 10px 12px; font-size: 14px; }
+  td { padding: 12px; vertical-align: top; border-bottom: 1px solid #e3e3e3; font-size: 13.5px; }
+  tr:nth-child(even) td { background: #fafafa; }
+  th:nth-child(1) { width: 12%; } th:nth-child(2) { width: 14%; }
+  th:nth-child(3) { width: 22%; } th:nth-child(4) { width: 26%; }
+  th:nth-child(5) { width: 6%; }  th:nth-child(6) { width: 20%; }
+  /* Output is markdown: shown as raw text until marked renders it (or if the CDN is unreachable) */
+  .md { padding: 10px 12px; background: #eef0ee; border-radius: 6px; max-height: 320px; overflow: auto;
+        white-space: pre-wrap; word-break: break-word; font-size: 13px; line-height: 1.5; }
+  .md.rendered { white-space: normal; }
+  .md h1, .md h2, .md h3 { margin: 12px 0 6px; line-height: 1.25; }
+  .md h1 { font-size: 17px; } .md h2 { font-size: 15px; } .md h3 { font-size: 14px; }
+  .md > :first-child { margin-top: 0; } .md > :last-child { margin-bottom: 0; }
+  .md p { margin: 6px 0; }
+  .md ul, .md ol { margin: 6px 0; padding-left: 20px; color: inherit; }
+  .md table { width: auto; border-collapse: collapse; background: #fff; margin: 8px 0; table-layout: auto; }
+  .md th, .md td { border: 1px solid #ccd; padding: 4px 8px; font-size: 12.5px; background: #fff; }
+  .md th { background: #dde0dd; color: #222; }
+  .md code { background: #dfe3df; padding: 1px 4px; border-radius: 3px; }
+  .score { display: inline-block; min-width: 28px; text-align: center; padding: 4px 8px;
+           border-radius: 4px; font-weight: 700; }
+  .score.bad  { background: #f8d0d0; color: #a11; }
+  .score.mid  { background: #fdebc0; color: #8a5a00; }
+  .score.good { background: #cdeccd; color: #1a6b1a; }
+  ul { margin: 6px 0 0; padding-left: 18px; color: #444; }
+  td > ul:first-child { margin-top: 0; }
+</style>
+</head>
+<body>
+<header><h1>Prompt Evaluation Report</h1></header>
+<div class="cards">
+  <div class="card"><div class="label">Total Test Cases</div><div class="value">3</div></div>
+  <div class="card"><div class="label">Average Score</div><div class="value">4.7 / 10</div></div>
+  <div class="card"><div class="label">Pass Rate (&ge;7)</div><div class="value">0.0%</div></div>
+</div>
+<table>
+  <thead>
+    <tr>
+      <th>Test Case</th><th>Scenario</th><th>Solution Criteria</th>
+      <th>Output</th><th>Score</th><th>Reasoning</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td>Lightweight endurance runner with no dietary restrictions</td>
+        <td><div><b>height:</b> 175</div><div><b>weight:</b> 62</div><div><b>goal:</b> build endurance for marathon training</div><div><b>restrictions:</b> none</div></td>
+        <td><ul><li>Meal plan includes 5-6 eating occasions to support high training volume</li><li>Carbohydrate content is emphasized (55-60% of calories) to fuel endurance work</li><li>Includes at least one pre-workout meal/snack and one post-workout recovery meal</li><li>Total daily calories are appropriate for a 62kg endurance athlete (approximately 2400-2800 kcal)</li><li>Meal plan specifies timing around training sessions</li></ul></td>
+        <td><div class="md"># Nutrition Plan for Marathon Training
+
+## Daily Calorie Needs
+- **Base requirement:** ~2,400-2,600 calories
+- **With training:** 2,800-3,200+ calories (depending on workout intensity)
+
+## Macronutrient Breakdown
+
+| Macronutrient | % of Calories | Purpose |
+|---|---|---|
+| **Carbs** | 55-60% | Fuel for endurance, glycogen storage |
+| **Protein** | 15-20% | Muscle recovery, ~1.2-1.6g per kg body weight |
+| **Fat** | 20-25% | Energy, hormone production |
+
+## Key Foods to Prioritize
+
+**Carbohydrates (primary fuel):**
+- Oats, rice, quinoa, whole grain bread/pasta
+- Potatoes, sweet potatoes
+- Fruits (bananas, berries, dates)
+
+**Protein:**
+- Chicken, fish, lean beef
+- Eggs, Greek yogurt
+- Legumes, tofu
+
+**Healthy fats:**
+- Nuts, seeds, avocado
+- Olive oil, fatty fish (salmon)
+
+## Timing Matters
+
+- **Pre-run:** Light carbs 1-3 hours before
+- **During:** Simple carbs for runs &gt;90 minutes
+- **Post-run:** Carbs + protein within 30-60 minutes
+
+## Hydration
+- 2-3 liters daily baseline
+- More on training days
+
+Would you like specific meal ideas or a sample day plan?</div></td>
+        <td><span class="score mid">4</span></td>
+        <td>While the output demonstrates strong nutritional knowledge and correctly addresses the theoretical framework (calorie needs, macronutrient percentages, timing principles, and hydration), it fundamentally fails to deliver the required concrete meal plan. The solution criteria explicitly demand a detailed daily meal plan with exact foods, portions, and timing around training sessions. Instead, the output provides only general guidance and food categories, then asks the user if they want the actual meal plan. This is a significant gap between what was requested and what was delivered. The output reads more like an informational guide than an actionable nutrition plan.<ul><li>CRITICAL: Does not provide an actual meal plan with specific foods, portions, and timing - only general categories and principles. The prompt explicitly requires 'Meals with exact foods, portions, and timing'</li><li>Does not specify 5-6 eating occasions as required by the solution criteria - only provides general timing guidance without a structured daily schedule</li><li>Ends with 'Would you like specific meal ideas or a sample day plan?' which indicates the output is incomplete and defers the core requirement to the user</li></ul></td>
+      </tr>
+
+      <tr>
+        <td>Petite female gymnast with gluten intolerance</td>
+        <td><div><b>height:</b> 158</div><div><b>weight:</b> 48</div><div><b>goal:</b> maintain performance and body composition</div><div><b>restrictions:</b> gluten-free</div></td>
+        <td><ul><li>All grains and breads are gluten-free alternatives (rice, quinoa, gluten-free oats, certified gluten-free bread)</li><li>No wheat, barley, or regular oat products are included</li><li>Caloric intake is appropriate for maintenance in a 48kg athlete (approximately 1800-2100 kcal)</li><li>Meal plan includes adequate protein (1.2-1.6g/kg = 58-77g) to support muscle maintenance</li><li>Includes nutrient density for bone health (calcium, magnesium, vitamin D) important for gymnasts</li><li>Meals are practical for training schedule with pre and post-workout nutrition options</li></ul></td>
+        <td><div class="md"># Nutrition Recommendation
+
+Based on your stats (BMI ~19.2 - healthy range), here's what to focus on:
+
+## Daily Calorie Target
+Approximately **1,800-2,000 calories** (adjust based on activity level)
+
+## Macronutrient Balance
+- **Protein**: 100-120g (athletic performance &amp; muscle maintenance)
+- **Carbs**: 200-250g (sustained energy)
+- **Fat**: 50-65g (hormone health &amp; nutrient absorption)
+
+## Gluten-Free Staples to Eat
+
+**Proteins:**
+- Chicken, fish, eggs, Greek yogurt
+- Legumes (lentils, chickpeas)
+- Tofu, tempeh
+
+**Carbs:**
+- Rice, quinoa, oats (certified GF)
+- Sweet potatoes, regular potatoes
+- Corn, buckwheat
+
+**Fats:**
+- Olive oil, avocado
+- Nuts, seeds
+- Fatty fish (omega-3s)
+
+**Vegetables &amp; Fruit:**
+- All fresh vegetables
+- Berries, bananas, citrus
+
+## Key Tips
+- Eat consistently across 3-4 meals
+- Time carbs around workouts
+- Stay hydrated
+- Check labels for hidden gluten
+- Consider a sports dietitian for personalized guidance
+
+Would you like specific meal ideas or adjustments based on your activity level?</div></td>
+        <td><span class="score mid">4</span></td>
+        <td>The output demonstrates solid foundational knowledge of gluten-free nutrition and appropriate caloric targets for the athlete's profile. The macronutrient ranges are generally reasonable, though protein is overestimated. However, the response fails to meet the core requirement of providing a detailed meal plan with exact foods, portions, and timing. Instead, it offers general guidance and food categories. Additionally, it omits specific consideration of bone health nutrients critical for gymnasts and lacks pre/post-workout nutrition strategies. The response reads more like preliminary guidance than a complete nutrition recommendation, and ends by asking if the user wants specific meal ideas rather than providing them.<ul><li>Critical missing element: No actual meal plan with specific foods, portions, and timing provided despite this being explicitly required in the criteria. The output offers general categories but not actionable daily meals</li><li>Macronutrient breakdown lacks specificity - protein recommendation (100-120g) significantly exceeds the athlete's needs (58-77g for 48kg at 1.2-1.6g/kg), creating potential overestimation without justification</li><li>Bone health nutrients (calcium, magnesium, vitamin D) are not addressed despite being specifically important for gymnasts and included in solution criteria</li><li>No pre/post-workout nutrition timing or specific meal examples provided, limiting practical application for training schedule optimization</li></ul></td>
+      </tr>
+
+      <tr>
+        <td>Heavyweight strength athlete with vegan dietary restriction</td>
+        <td><div><b>height:</b> 188</div><div><b>weight:</b> 95</div><div><b>goal:</b> gain muscle mass for powerlifting</div><div><b>restrictions:</b> vegan</div></td>
+        <td><ul><li>All protein sources are plant-based (legumes, tofu, tempeh, nuts, seeds, plant-based protein powder)</li><li>Protein intake is elevated (1.8-2.2g per kg body weight = 171-209g daily minimum)</li><li>Caloric surplus is appropriate for muscle gain in a 95kg athlete (approximately 3200-3600 kcal)</li><li>Includes nutrient-dense vegan sources of iron, B12, and omega-3s</li><li>Meal plan contains at least 4-5 meals to support high protein distribution throughout the day</li><li>Includes calorie-dense meals featuring nuts, seeds, avocados, and oils to help meet surplus goals</li></ul></td>
+        <td><div class="md"># Vegan Powerlifting Nutrition Plan
+
+## Calorie &amp; Protein Targets
+- **Calories**: ~3,200-3,500/day (surplus for muscle gain)
+- **Protein**: 1.6-2.2g per kg bodyweight = **152-209g/day**
+- **Carbs**: 4-7g per kg = **380-665g/day** (fuel for heavy training)
+- **Fats**: 0.5-1.5g per kg = **47-142g/day**
+
+## Protein-Rich Vegan Foods (Priority)
+- **Legumes**: lentils, chickpeas, black beans, peas
+- **Tofu/Tempeh**: 15-19g protein per serving
+- **Textured Vegetable Protein (TVP)**
+- **Nutritional yeast**: 8g protein per 2 tbsp
+- **Vegan protein powder**: pea, rice, hemp, soy blends
+- **Whole grains**: quinoa, oats, brown rice
+- **Nuts/seeds**: hemp seeds, pumpkin seeds, tahini
+
+## Sample Daily Breakdown
+- **Breakfast**: Oats + protein powder + banana + almond butter
+- **Snack**: Hummus + veggie sticks + nuts
+- **Lunch**: Lentil curry with rice + leafy greens
+- **Snack**: Smoothie (tofu, berries, plant milk, protein powder)
+- **Dinner**: Tempeh stir-fry + quinoa + broccoli
+- **Evening**: Nut butter on toast
+
+## Supplements to Consider
+- **Creatine monohydrate** (vegan-friendly, proven for strength)
+- **B12** (essential for vegans)
+- **Vitamin D** (especially in winter)
+- **Omega-3** (algae-based)
+
+Focus on eating enough consistently—calorie surplus is key for muscle gain!</div></td>
+        <td><span class="score mid">6</span></td>
+        <td>The output demonstrates strong foundational knowledge of vegan powerlifting nutrition with appropriate macro targets and excellent protein source identification. However, it falls short of the 'exact foods, portions, and timing' requirement specified in the evaluation criteria. The plan reads as educational guidance rather than an actionable meal plan. A user following this would still need to construct their own meals and calculate portions, defeating the purpose of a personalized nutrition plan. The macronutrient ranges are sound but lack a concrete daily example showing how to actually achieve the 3,200-3,500 calorie target with proper distribution. The supplementation section is a notable strength that adds practical value.<ul><li>No specific meal plan with exact portions and calorie counts—provides only generic meal descriptions without quantifiable data (e.g., '2 cups oats + 30g protein powder + 2 tbsp almond butter' with total calories)</li><li>Missing meal timing specificity and daily caloric total verification—while ranges are given (3,200-3,500), no sample day totals the macros to confirm the plan actually hits targets</li><li>Incomplete nutrient density coverage—lacks specific iron and B12 food sources (e.g., fortified plant milks, nutritional yeast quantities, leafy greens) despite listing these as criteria</li></ul></td>
+      </tr>
+  </tbody>
+</table>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script>
+  if (window.marked && window.DOMPurify) {
+    document.querySelectorAll(".md").forEach((el) => {
+      el.innerHTML = DOMPurify.sanitize(marked.parse(el.textContent));
+      el.classList.add("rendered");
+    });
+  }
+</script>
+</body>
+</html>
