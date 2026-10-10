@@ -1,0 +1,87 @@
+{
+  "average": 4.666666666666667,
+  "passRate": 0,
+  "results": [
+    {
+      "testCase": {
+        "description": "Lightweight endurance runner with no dietary restrictions",
+        "promptInputs": {
+          "height": "175",
+          "weight": "62",
+          "goal": "build endurance for marathon training",
+          "restrictions": "none"
+        },
+        "solutionCriteria": [
+          "Meal plan includes 5-6 eating occasions to support high training volume",
+          "Carbohydrate content is emphasized (55-60% of calories) to fuel endurance work",
+          "Includes at least one pre-workout meal/snack and one post-workout recovery meal",
+          "Total daily calories are appropriate for a 62kg endurance athlete (approximately 2400-2800 kcal)",
+          "Meal plan specifies timing around training sessions"
+        ]
+      },
+      "output": "# Nutrition Plan for Marathon Training\n\n## Daily Calorie Needs\n- **Base requirement:** ~2,400-2,600 calories\n- **With training:** 2,800-3,200+ calories (depending on workout intensity)\n\n## Macronutrient Breakdown\n\n| Macronutrient | % of Calories | Purpose |\n|---|---|---|\n| **Carbs** | 55-60% | Fuel for endurance, glycogen storage |\n| **Protein** | 15-20% | Muscle recovery, ~1.2-1.6g per kg body weight |\n| **Fat** | 20-25% | Energy, hormone production |\n\n## Key Foods to Prioritize\n\n**Carbohydrates (primary fuel):**\n- Oats, rice, quinoa, whole grain bread/pasta\n- Potatoes, sweet potatoes\n- Fruits (bananas, berries, dates)\n\n**Protein:**\n- Chicken, fish, lean beef\n- Eggs, Greek yogurt\n- Legumes, tofu\n\n**Healthy fats:**\n- Nuts, seeds, avocado\n- Olive oil, fatty fish (salmon)\n\n## Timing Matters\n\n- **Pre-run:** Light carbs 1-3 hours before\n- **During:** Simple carbs for runs >90 minutes\n- **Post-run:** Carbs + protein within 30-60 minutes\n\n## Hydration\n- 2-3 liters daily baseline\n- More on training days\n\nWould you like specific meal ideas or a sample day plan?",
+      "score": 4,
+      "reasoning": "While the output demonstrates strong nutritional knowledge and correctly addresses the theoretical framework (calorie needs, macronutrient percentages, timing principles, and hydration), it fundamentally fails to deliver the required concrete meal plan. The solution criteria explicitly demand a detailed daily meal plan with exact foods, portions, and timing around training sessions. Instead, the output provides only general guidance and food categories, then asks the user if they want the actual meal plan. This is a significant gap between what was requested and what was delivered. The output reads more like an informational guide than an actionable nutrition plan.",
+      "weaknesses": [
+        "CRITICAL: Does not provide an actual meal plan with specific foods, portions, and timing - only general categories and principles. The prompt explicitly requires 'Meals with exact foods, portions, and timing'",
+        "Does not specify 5-6 eating occasions as required by the solution criteria - only provides general timing guidance without a structured daily schedule",
+        "Ends with 'Would you like specific meal ideas or a sample day plan?' which indicates the output is incomplete and defers the core requirement to the user"
+      ]
+    },
+    {
+      "testCase": {
+        "description": "Heavyweight strength athlete with vegan dietary restriction",
+        "promptInputs": {
+          "height": "188",
+          "weight": "95",
+          "goal": "gain muscle mass for powerlifting",
+          "restrictions": "vegan"
+        },
+        "solutionCriteria": [
+          "All protein sources are plant-based (legumes, tofu, tempeh, nuts, seeds, plant-based protein powder)",
+          "Protein intake is elevated (1.8-2.2g per kg body weight = 171-209g daily minimum)",
+          "Caloric surplus is appropriate for muscle gain in a 95kg athlete (approximately 3200-3600 kcal)",
+          "Includes nutrient-dense vegan sources of iron, B12, and omega-3s",
+          "Meal plan contains at least 4-5 meals to support high protein distribution throughout the day",
+          "Includes calorie-dense meals featuring nuts, seeds, avocados, and oils to help meet surplus goals"
+        ]
+      },
+      "output": "# Vegan Powerlifting Nutrition Plan\n\n## Calorie & Protein Targets\n- **Calories**: ~3,200-3,500/day (surplus for muscle gain)\n- **Protein**: 1.6-2.2g per kg bodyweight = **152-209g/day**\n- **Carbs**: 4-7g per kg = **380-665g/day** (fuel for heavy training)\n- **Fats**: 0.5-1.5g per kg = **47-142g/day**\n\n## Protein-Rich Vegan Foods (Priority)\n- **Legumes**: lentils, chickpeas, black beans, peas\n- **Tofu/Tempeh**: 15-19g protein per serving\n- **Textured Vegetable Protein (TVP)**\n- **Nutritional yeast**: 8g protein per 2 tbsp\n- **Vegan protein powder**: pea, rice, hemp, soy blends\n- **Whole grains**: quinoa, oats, brown rice\n- **Nuts/seeds**: hemp seeds, pumpkin seeds, tahini\n\n## Sample Daily Breakdown\n- **Breakfast**: Oats + protein powder + banana + almond butter\n- **Snack**: Hummus + veggie sticks + nuts\n- **Lunch**: Lentil curry with rice + leafy greens\n- **Snack**: Smoothie (tofu, berries, plant milk, protein powder)\n- **Dinner**: Tempeh stir-fry + quinoa + broccoli\n- **Evening**: Nut butter on toast\n\n## Supplements to Consider\n- **Creatine monohydrate** (vegan-friendly, proven for strength)\n- **B12** (essential for vegans)\n- **Vitamin D** (especially in winter)\n- **Omega-3** (algae-based)\n\nFocus on eating enough consistently—calorie surplus is key for muscle gain!",
+      "score": 6,
+      "reasoning": "The output demonstrates strong foundational knowledge of vegan powerlifting nutrition with appropriate macro targets and excellent protein source identification. However, it falls short of the 'exact foods, portions, and timing' requirement specified in the evaluation criteria. The plan reads as educational guidance rather than an actionable meal plan. A user following this would still need to construct their own meals and calculate portions, defeating the purpose of a personalized nutrition plan. The macronutrient ranges are sound but lack a concrete daily example showing how to actually achieve the 3,200-3,500 calorie target with proper distribution. The supplementation section is a notable strength that adds practical value.",
+      "weaknesses": [
+        "No specific meal plan with exact portions and calorie counts—provides only generic meal descriptions without quantifiable data (e.g., '2 cups oats + 30g protein powder + 2 tbsp almond butter' with total calories)",
+        "Missing meal timing specificity and daily caloric total verification—while ranges are given (3,200-3,500), no sample day totals the macros to confirm the plan actually hits targets",
+        "Incomplete nutrient density coverage—lacks specific iron and B12 food sources (e.g., fortified plant milks, nutritional yeast quantities, leafy greens) despite listing these as criteria"
+      ]
+    },
+    {
+      "testCase": {
+        "description": "Petite female gymnast with gluten intolerance",
+        "promptInputs": {
+          "height": "158",
+          "weight": "48",
+          "goal": "maintain performance and body composition",
+          "restrictions": "gluten-free"
+        },
+        "solutionCriteria": [
+          "All grains and breads are gluten-free alternatives (rice, quinoa, gluten-free oats, certified gluten-free bread)",
+          "No wheat, barley, or regular oat products are included",
+          "Caloric intake is appropriate for maintenance in a 48kg athlete (approximately 1800-2100 kcal)",
+          "Meal plan includes adequate protein (1.2-1.6g/kg = 58-77g) to support muscle maintenance",
+          "Includes nutrient density for bone health (calcium, magnesium, vitamin D) important for gymnasts",
+          "Meals are practical for training schedule with pre and post-workout nutrition options"
+        ]
+      },
+      "output": "# Nutrition Recommendation\n\nBased on your stats (BMI ~19.2 - healthy range), here's what to focus on:\n\n## Daily Calorie Target\nApproximately **1,800-2,000 calories** (adjust based on activity level)\n\n## Macronutrient Balance\n- **Protein**: 100-120g (athletic performance & muscle maintenance)\n- **Carbs**: 200-250g (sustained energy)\n- **Fat**: 50-65g (hormone health & nutrient absorption)\n\n## Gluten-Free Staples to Eat\n\n**Proteins:**\n- Chicken, fish, eggs, Greek yogurt\n- Legumes (lentils, chickpeas)\n- Tofu, tempeh\n\n**Carbs:**\n- Rice, quinoa, oats (certified GF)\n- Sweet potatoes, regular potatoes\n- Corn, buckwheat\n\n**Fats:**\n- Olive oil, avocado\n- Nuts, seeds\n- Fatty fish (omega-3s)\n\n**Vegetables & Fruit:**\n- All fresh vegetables\n- Berries, bananas, citrus\n\n## Key Tips\n- Eat consistently across 3-4 meals\n- Time carbs around workouts\n- Stay hydrated\n- Check labels for hidden gluten\n- Consider a sports dietitian for personalized guidance\n\nWould you like specific meal ideas or adjustments based on your activity level?",
+      "score": 4,
+      "reasoning": "The output demonstrates solid foundational knowledge of gluten-free nutrition and appropriate caloric targets for the athlete's profile. The macronutrient ranges are generally reasonable, though protein is overestimated. However, the response fails to meet the core requirement of providing a detailed meal plan with exact foods, portions, and timing. Instead, it offers general guidance and food categories. Additionally, it omits specific consideration of bone health nutrients critical for gymnasts and lacks pre/post-workout nutrition strategies. The response reads more like preliminary guidance than a complete nutrition recommendation, and ends by asking if the user wants specific meal ideas rather than providing them.",
+      "weaknesses": [
+        "Critical missing element: No actual meal plan with specific foods, portions, and timing provided despite this being explicitly required in the criteria. The output offers general categories but not actionable daily meals",
+        "Macronutrient breakdown lacks specificity - protein recommendation (100-120g) significantly exceeds the athlete's needs (58-77g for 48kg at 1.2-1.6g/kg), creating potential overestimation without justification",
+        "Bone health nutrients (calcium, magnesium, vitamin D) are not addressed despite being specifically important for gymnasts and included in solution criteria",
+        "No pre/post-workout nutrition timing or specific meal examples provided, limiting practical application for training schedule optimization"
+      ]
+    }
+  ]
+}

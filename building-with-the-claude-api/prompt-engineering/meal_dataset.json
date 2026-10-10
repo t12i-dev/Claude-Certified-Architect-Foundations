@@ -1,0 +1,52 @@
+[
+  {
+    "description": "Lightweight endurance runner with no dietary restrictions",
+    "promptInputs": {
+      "height": "175",
+      "weight": "62",
+      "goal": "build endurance for marathon training",
+      "restrictions": "none"
+    },
+    "solutionCriteria": [
+      "Meal plan includes 5-6 eating occasions to support high training volume",
+      "Carbohydrate content is emphasized (55-60% of calories) to fuel endurance work",
+      "Includes at least one pre-workout meal/snack and one post-workout recovery meal",
+      "Total daily calories are appropriate for a 62kg endurance athlete (approximately 2400-2800 kcal)",
+      "Meal plan specifies timing around training sessions"
+    ]
+  },
+  {
+    "description": "Heavyweight strength athlete with vegan dietary restriction",
+    "promptInputs": {
+      "height": "188",
+      "weight": "95",
+      "goal": "gain muscle mass for powerlifting",
+      "restrictions": "vegan"
+    },
+    "solutionCriteria": [
+      "All protein sources are plant-based (legumes, tofu, tempeh, nuts, seeds, plant-based protein powder)",
+      "Protein intake is elevated (1.8-2.2g per kg body weight = 171-209g daily minimum)",
+      "Caloric surplus is appropriate for muscle gain in a 95kg athlete (approximately 3200-3600 kcal)",
+      "Includes nutrient-dense vegan sources of iron, B12, and omega-3s",
+      "Meal plan contains at least 4-5 meals to support high protein distribution throughout the day",
+      "Includes calorie-dense meals featuring nuts, seeds, avocados, and oils to help meet surplus goals"
+    ]
+  },
+  {
+    "description": "Petite female gymnast with gluten intolerance",
+    "promptInputs": {
+      "height": "158",
+      "weight": "48",
+      "goal": "maintain performance and body composition",
+      "restrictions": "gluten-free"
+    },
+    "solutionCriteria": [
+      "All grains and breads are gluten-free alternatives (rice, quinoa, gluten-free oats, certified gluten-free bread)",
+      "No wheat, barley, or regular oat products are included",
+      "Caloric intake is appropriate for maintenance in a 48kg athlete (approximately 1800-2100 kcal)",
+      "Meal plan includes adequate protein (1.2-1.6g/kg = 58-77g) to support muscle maintenance",
+      "Includes nutrient density for bone health (calcium, magnesium, vitamin D) important for gymnasts",
+      "Meals are practical for training schedule with pre and post-workout nutrition options"
+    ]
+  }
+]
