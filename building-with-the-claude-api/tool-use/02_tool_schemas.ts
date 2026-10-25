@@ -1,4 +1,4 @@
-import { client, model } from "../building-with-the-claude-api/lib.js";
+import { client, model } from "../lib.js";
 import { getCurrentDatetimeSchema } from "./tools.js";
 
 // One request with the tool attached. We do NOT run the tool or loop yet:
