@@ -3,7 +3,7 @@ import { config } from "dotenv";
 import { fileURLToPath } from "node:url";
 
 // Load .env from the project root no matter which folder the script runs from
-config({ path: fileURLToPath(new URL("./.env", import.meta.url)) });
+config({ path: fileURLToPath(new URL("./.env", import.meta.url)), quiet: true });
 
 export const client = new Anthropic(); // reads ANTHROPIC_API_KEY from env
 
@@ -11,6 +11,9 @@ export const client = new Anthropic(); // reads ANTHROPIC_API_KEY from env
 export const model = "claude-haiku-4-5-20251001";
 
 export type Message = Anthropic.MessageParam;
+
+// Any tool the API accepts: your own schemas AND Anthropic-defined ones (text editor, ...)
+export type ToolDef = NonNullable<Anthropic.MessageCreateParams["tools"]>[number];
 
 // A message's content is either a plain string or a list of blocks
 // (text, tool_use, tool_result, ...)
@@ -20,7 +23,7 @@ export type ChatOptions = {
     system?: string;
     temperature?: number;
     stopSequences?: string[];
-    tools?: Anthropic.Tool[];
+    tools?: ToolDef[];
 };
 
 export function addUserMessage(messages: Message[], content: Content) {
@@ -40,7 +43,7 @@ export async function chatRaw(
     // undefined fields are dropped by JSON.stringify, so optional params are safe
     return client.messages.create({
         model,
-        max_tokens: 2000, // meal plans are long; 1000 would truncate them
+        max_tokens: 2000, // meal plans and file edits are long; 1000 would truncate them
         messages,
         temperature,
         system,

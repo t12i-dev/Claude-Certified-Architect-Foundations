@@ -4,30 +4,67 @@ import {
     addUserMessage,
     chatRaw,
     type Message,
+    type ToolDef,
 } from "../lib.js";
 import { getCurrentDatetime, getCurrentDatetimeSchema } from "./tools.js";
+import {
+    addDurationToDatetime,
+    addDurationToDatetimeSchema,
+    setReminder,
+    setReminderSchema,
+} from "./reminder-tools.js";
 
-// Every tool the model may use. A new tool = a new schema here + a new case in runTool.
-export const tools: Anthropic.Tool[] = [getCurrentDatetimeSchema];
+// Maps a tool name + the model's input to a result. Throwing = "this call failed".
+export type ToolRouter = (name: string, input: unknown) => unknown;
 
-// Router: tool name -> implementation. The conversation loop never changes
-// when tools are added. Throwing means "this call failed": runTools reports
-// it to Claude as an error result.
-export function runTool(name: string, input: unknown): unknown {
+// The reminder project's tools. A new tool = function + schema, an entry here, a case below.
+export const defaultTools: ToolDef[] = [
+    getCurrentDatetimeSchema,
+    addDurationToDatetimeSchema,
+    setReminderSchema,
+];
+
+// The model's input is untrusted: read it as a plain object, then check each field
+const asObject = (input: unknown): Record<string, unknown> =>
+    typeof input === "object" && input !== null
+        ? (input as Record<string, unknown>)
+        : {};
+
+// Default router for the reminder project
+export const runTool: ToolRouter = (name, input) => {
+    const args = asObject(input);
+
     switch (name) {
         case "get_current_datetime": {
-            // input comes from the model: treat it as untrusted
-            const { date_format } = (input ?? {}) as { date_format?: unknown };
+            const { date_format } = args;
             if (date_format !== undefined && typeof date_format !== "string") {
                 throw new Error("date_format must be a string");
             }
             // The schema property is date_format; our function takes dateFormat
             return getCurrentDatetime(date_format);
         }
+
+        case "add_duration_to_datetime": {
+            const { datetime, duration, unit } = args;
+            if (typeof datetime !== "string") throw new Error("datetime must be a string");
+            if (typeof duration !== "number") throw new Error("duration must be a number");
+            if (unit !== undefined && typeof unit !== "string") {
+                throw new Error("unit must be a string");
+            }
+            return addDurationToDatetime(datetime, duration, unit);
+        }
+
+        case "set_reminder": {
+            const { content, timestamp } = args;
+            if (typeof content !== "string") throw new Error("content must be a string");
+            if (typeof timestamp !== "string") throw new Error("timestamp must be a string");
+            return setReminder(content, timestamp);
+        }
+
         default:
             throw new Error(`Unknown tool: ${name}`);
     }
-}
+};
 
 // tool_result content must be a string: keep strings as they are, JSON-encode the rest
 const serialize = (output: unknown): string =>
@@ -37,6 +74,7 @@ const serialize = (output: unknown): string =>
 // Failures still produce a result, flagged with is_error, so Claude can react.
 export function runTools(
     message: Anthropic.Message,
+    router: ToolRouter = runTool,
 ): Anthropic.ToolResultBlockParam[] {
     const toolUses = message.content.filter(
         (b): b is Anthropic.ToolUseBlock => b.type === "tool_use",
@@ -45,8 +83,9 @@ export function runTools(
     return toolUses.map((toolUse): Anthropic.ToolResultBlockParam => {
         console.log(`  tool_use: ${toolUse.name}(${JSON.stringify(toolUse.input)})`);
         try {
-            const content = serialize(runTool(toolUse.name, toolUse.input));
-            console.log(`  tool_result: ${content}`);
+            const content = serialize(router(toolUse.name, toolUse.input));
+            const preview = content.length > 300 ? `${content.slice(0, 300)}...` : content;
+            console.log(`  tool_result: ${preview}`);
             return { type: "tool_result", tool_use_id: toolUse.id, content, is_error: false };
         } catch (err) {
             const content = `Error: ${(err as Error).message}`;
@@ -63,15 +102,26 @@ const textOf = (message: Anthropic.Message): string =>
         .map((b) => b.text)
         .join("\n");
 
+type ConversationOptions = {
+    tools?: ToolDef[]; // which tools Claude can see
+    router?: ToolRouter; // how tool calls are executed
+    system?: string;
+    maxTurns?: number; // safety net only, NOT the stopping condition
+};
+
 // Keeps calling Claude until it stops asking for tools.
-// maxTurns is only a safety net, NOT the stopping condition (stop_reason is).
 export async function runConversation(
     messages: Message[],
-    { maxTurns = 10 }: { maxTurns?: number } = {},
+    {
+        tools = defaultTools,
+        router = runTool,
+        system,
+        maxTurns = 10,
+    }: ConversationOptions = {},
 ): Promise<{ messages: Message[]; finalText: string }> {
     for (let turn = 1; turn <= maxTurns; turn++) {
         console.log(`\n[turn ${turn}] calling Claude...`);
-        const response = await chatRaw(messages, { tools });
+        const response = await chatRaw(messages, { tools, system });
         addAssistantMessage(messages, response.content); // keep ALL blocks
 
         const text = textOf(response);
@@ -85,7 +135,7 @@ export async function runConversation(
             return { messages, finalText: text };
         }
 
-        const results = runTools(response);
+        const results = runTools(response, router);
         if (results.length === 0) {
             throw new Error("stop_reason is tool_use but no tool_use block was found");
         }
