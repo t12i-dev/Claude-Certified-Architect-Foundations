@@ -1,7 +1,7 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import type { CallToolResult, Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { CallToolResult, GetPromptResult, Prompt, Tool } from "@modelcontextprotocol/sdk/types.js";
 import type { ToolDef } from "../lib.js";
 
 // Wraps the SDK client so the rest of the app never touches connection details
@@ -50,6 +50,25 @@ export class MCPClient {
             throw new Error(`Resource ${uri} is binary (${item.mimeType ?? "unknown type"}): not supported here`);
         }
         return item.mimeType === "application/json" ? JSON.parse(item.text) : item.text;
+    }
+
+    async listPrompts(): Promise<Prompt[]> {
+        this.assertConnected();
+        const prompts: Prompt[] = [];
+        let cursor: string | undefined;
+        do {
+            const page = await this.client.listPrompts({ cursor });
+            prompts.push(...page.prompts);
+            cursor = page.nextCursor;
+        } while (cursor);
+        return prompts;
+    }
+
+    // Prompt arguments are always strings in MCP. A failure (unknown prompt, server error) rejects.
+    async getPrompt(name: string, args: Record<string, string>): Promise<GetPromptResult["messages"]> {
+        this.assertConnected();
+        const { messages } = await this.client.getPrompt({ name, arguments: args });
+        return messages;
     }
 
     async close(): Promise<void> {
@@ -102,4 +121,32 @@ export async function connectStdio(command: string, args: string[]): Promise<Cli
     const client = new Client({ name: "cli-chat", version: "1.0.0" });
     await client.connect(new StdioClientTransport({ command, args }));
     return client;
+}
+
+// MCP prompt messages -> Claude messages. Text stays text, an embedded text resource is wrapped
+// in a tagged block that keeps its uri, images pass through; anything else becomes JSON text.
+export function toClaudeMessages(
+    messages: GetPromptResult["messages"],
+): Anthropic.MessageParam[] {
+    return messages.map((m) => {
+        const c = m.content;
+        let block: Anthropic.TextBlockParam | Anthropic.ImageBlockParam;
+        if (c.type === "text") {
+            block = { type: "text", text: c.text };
+        } else if (c.type === "image") {
+            block = {
+                type: "image",
+                source: {
+                    type: "base64",
+                    media_type: c.mimeType as Anthropic.Base64ImageSource["media_type"],
+                    data: c.data,
+                },
+            };
+        } else if (c.type === "resource" && "text" in c.resource) {
+            block = { type: "text", text: `<resource uri="${c.resource.uri}">\n${c.resource.text}\n</resource>` };
+        } else {
+            block = { type: "text", text: JSON.stringify(c) };
+        }
+        return { role: m.role, content: [block] };
+    });
 }

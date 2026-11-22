@@ -9,7 +9,8 @@ import {
     textFromMessage,
     type Message,
 } from "../lib.js";
-import { MCPClient, toClaudeTool, toToolResultContent } from "./mcp-client.js";
+import { parseCommand, usage } from "./commands.js";
+import { MCPClient, toClaudeMessages, toClaudeTool, toToolResultContent } from "./mcp-client.js";
 import { buildPrompt, DOC_LIST_URI, docUri, extractMentions } from "./mentions.js";
 
 const SYSTEM =
@@ -20,14 +21,16 @@ const SYSTEM =
     "Never guess a document's contents.";
 const MAX_TURNS = 10; // safety net only: the loop normally ends on stop_reason
 
-// ---- Connect to the MCP server and fetch its tools once at startup ----
+// ---- Connect to the MCP server; tools and prompts are fetched once at startup ----
 const serverPath = fileURLToPath(new URL("./mcp-server.ts", import.meta.url));
 const mcp = await new MCPClient("npx", ["tsx", serverPath]).connect();
 const mcpTools = await mcp.listTools();
 const tools = mcpTools.map(toClaudeTool);
+const prompts = await mcp.listPrompts();
 console.log(`Connected to MCP server. Tools: ${mcpTools.map((t) => t.name).join(", ")}`);
+console.log(`Commands: ${prompts.map(usage).join(", ")}`);
 
-// ---- Document ids come from a RESOURCE: they feed the @mention autocomplete ----
+// ---- Document ids come from a RESOURCE: they feed the autocomplete ----
 let docIds: string[] = [];
 async function refreshDocIds(): Promise<void> {
     try {
@@ -38,14 +41,24 @@ async function refreshDocIds(): Promise<void> {
     }
 }
 await refreshDocIds();
-console.log(`Documents (type @ then Tab to autocomplete): ${docIds.join(", ")}`);
+console.log(`Documents (use @name or a command, then Tab to autocomplete): ${docIds.join(", ")}`);
 
-// Tab completion for "@name" (uses the ids fetched above)
+// Tab completion: "/command" names, doc ids for doc_id arguments, and "@name" mentions
 function completer(line: string): [string[], string] {
+    if (line.startsWith("/")) {
+        const parts = line.slice(1).split(" ");
+        const current = parts[parts.length - 1];
+        if (parts.length === 1) {
+            return [prompts.map((p) => `/${p.name}`).filter((c) => c.startsWith(line)), line];
+        }
+        const prompt = prompts.find((p) => p.name === parts[0]);
+        const argName = prompt?.arguments?.[parts.length - 2]?.name;
+        if (argName === "doc_id") return [docIds.filter((id) => id.startsWith(current)), current];
+        return [[], line];
+    }
     const m = /@([\w.\-]*)$/.exec(line);
     if (!m) return [[], line];
-    const hits = docIds.filter((id) => id.startsWith(m[1])).map((id) => `@${id}`);
-    return [hits, `@${m[1]}`];
+    return [docIds.filter((id) => id.startsWith(m[1])).map((id) => `@${id}`), `@${m[1]}`];
 }
 
 // ---- Shutdown: always close the client so the server process does not linger ----
@@ -108,7 +121,7 @@ async function answer(messages: Message[]): Promise<{ text: string; toolsUsed: s
 
 // ---- CLI ----
 const messages: Message[] = [];
-console.log('Type a question, or "exit" to quit.');
+console.log('Type a question, a command, or "exit" to quit.');
 
 while (true) {
     await refreshDocIds(); // keep the autocomplete list current
@@ -118,19 +131,31 @@ while (true) {
 
     const checkpoint = messages.length;
     try {
-        // Resources are fetched by the APPLICATION and injected into the prompt: no tool call needed
-        const injected: { id: string; text: string }[] = [];
-        for (const id of extractMentions(line, docIds)) {
-            console.log(`  [resource] ${docUri(id)}`);
-            injected.push({ id, text: String(await mcp.readResource(docUri(id))) });
+        const sources: string[] = [];
+
+        if (line.startsWith("/")) {
+            // PROMPT: the user picked a ready-made prompt; the server's messages replace the typed line
+            const parsed = parseCommand(line, prompts);
+            if (!parsed.ok) {
+                console.log(parsed.error);
+                continue;
+            }
+            console.log(`  [prompt] ${parsed.name}(${JSON.stringify(parsed.args)})`);
+            messages.push(...toClaudeMessages(await mcp.getPrompt(parsed.name, parsed.args)));
+            sources.push(`prompt: /${parsed.name}`);
+        } else {
+            // RESOURCES: @mentions are fetched by the APPLICATION and injected into the prompt
+            const injected: { id: string; text: string }[] = [];
+            for (const id of extractMentions(line, docIds)) {
+                console.log(`  [resource] ${docUri(id)}`);
+                injected.push({ id, text: String(await mcp.readResource(docUri(id))) });
+            }
+            addUserMessage(messages, buildPrompt(line, injected));
+            if (injected.length > 0) sources.push(`injected resources: ${injected.map((d) => d.id).join(", ")}`);
         }
-        addUserMessage(messages, buildPrompt(line, injected));
 
         const { text, toolsUsed } = await answer(messages);
         console.log(`\n${text}`);
-
-        const sources: string[] = [];
-        if (injected.length > 0) sources.push(`injected resources: ${injected.map((d) => d.id).join(", ")}`);
         if (toolsUsed.length > 0) sources.push(`MCP tools: ${toolsUsed.join(", ")}`);
         console.log(`[source: ${sources.length > 0 ? sources.join(" | ") : "the model alone, no tools involved"}]`);
     } catch (err) {
