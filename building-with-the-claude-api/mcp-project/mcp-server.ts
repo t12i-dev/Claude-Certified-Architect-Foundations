@@ -1,4 +1,4 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
@@ -26,6 +26,8 @@ const fail = (text: string): CallToolResult => ({
 
 const notFound = (docId: string) =>
     fail(`Doc with id ${docId} not found. Available ids: ${Object.keys(docs).join(", ")}`);
+
+// ---------- Tools: actions the MODEL decides to take ----------
 
 server.registerTool(
     "read_doc_contents",
@@ -70,6 +72,42 @@ server.registerTool(
 
         docs[doc_id] = parts.join(new_str);
         return ok(`Replaced ${count} occurrence(s) in ${doc_id}`);
+    },
+);
+
+// ---------- Resources: data the APPLICATION fetches (like GET handlers) ----------
+
+// Direct resource: a fixed URI with no parameters (feeds the @mention autocomplete)
+server.registerResource(
+    "list_docs",
+    "docs://documents",
+    {
+        title: "Document list",
+        description: "Ids of all available documents",
+        mimeType: "application/json",
+    },
+    async (uri) => ({
+        contents: [
+            { uri: uri.href, mimeType: "application/json", text: JSON.stringify(Object.keys(docs)) },
+        ],
+    }),
+);
+
+// Templated resource: {doc_id} is parsed from the URI and arrives in `variables`.
+// `list: undefined` = the template does not enumerate its children (list_docs does that).
+server.registerResource(
+    "fetch_doc",
+    new ResourceTemplate("docs://documents/{doc_id}", { list: undefined }),
+    {
+        title: "Document contents",
+        description: "The contents of a single document",
+        mimeType: "text/plain",
+    },
+    async (uri, variables) => {
+        const docId = Array.isArray(variables.doc_id) ? variables.doc_id[0] : variables.doc_id;
+        // Resources have no isError: a failure here is a protocol error for the client app
+        if (!Object.hasOwn(docs, docId)) throw new Error(`Doc with id ${docId} not found`);
+        return { contents: [{ uri: uri.href, mimeType: "text/plain", text: docs[docId] }] };
     },
 );
 

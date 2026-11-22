@@ -19,8 +19,9 @@ const MAX_TURNS = 10; // safety net only: the loop normally ends on stop_reason
 // ---- Connect to the MCP server and fetch its tools once at startup ----
 const serverPath = fileURLToPath(new URL("./mcp-server.ts", import.meta.url));
 const mcp = await new MCPClient("npx", ["tsx", serverPath]).connect();
-const tools = (await mcp.listTools()).map(toClaudeTool);
-console.log(`Connected to MCP server. Tools: ${tools.map((t) => t.name).join(", ")}`);
+const mcpTools = await mcp.listTools();
+const tools = mcpTools.map(toClaudeTool);
+console.log(`Connected to MCP server. Tools: ${mcpTools.map((t) => t.name).join(", ")}`);
 
 // ---- Shutdown: always close the client so the server process does not linger ----
 async function shutdown(code = 0): Promise<never> {
@@ -61,7 +62,7 @@ async function answer(messages: Message[]): Promise<{ text: string; toolsUsed: s
     const toolsUsed: string[] = [];
 
     for (let turn = 0; turn < MAX_TURNS; turn++) {
-        const response = await chatRaw(messages, { system: SYSTEM, tools, maxTokens: 1000 });
+        const response = await chatRaw(messages, { system: SYSTEM, tools });
         addAssistantMessage(messages, response.content); // keep ALL blocks (text + tool_use)
 
         if (response.stop_reason !== "tool_use") {
