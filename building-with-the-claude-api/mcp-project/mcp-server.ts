@@ -111,6 +111,45 @@ server.registerResource(
     },
 );
 
+// ---------- Prompts: ready-made instructions the USER triggers (like a /format command) ----------
+
+server.registerPrompt(
+    "format",
+    {
+        title: "Format document",
+        description: "Rewrites the contents of the document in Markdown format.",
+        // Prompt arguments are always strings in MCP
+        argsSchema: { doc_id: z.string().describe("Id of the document to format") },
+    },
+    ({ doc_id }) => {
+        // Fail fast: no point building a prompt that is guaranteed to fail later
+        // (and the argument never reaches the prompt text unless it is a real document id)
+        if (!Object.hasOwn(docs, doc_id)) {
+            throw new Error(`Doc with id ${doc_id} not found. Available ids: ${Object.keys(docs).join(", ")}`);
+        }
+
+        // The prompt is written around THIS server's tools: edit_document is find-and-replace,
+        // so the model must read the document first and replace its complete original text.
+        const prompt = `Your goal is to reformat a document so that it is written with Markdown syntax.
+
+The id of the document you need to reformat is:
+<document_id>
+${doc_id}
+</document_id>
+
+Follow these steps:
+1. Read the document with the 'read_doc_contents' tool.
+2. Rewrite it in Markdown: add headers, bullet points, tables, etc. wherever they help.
+   Preserve ALL of the original information and meaning: do not add facts and do not remove content.
+3. Save the result with the 'edit_document' tool. Set old_str to the document's complete
+   original text (it must match exactly) and new_str to the Markdown version.
+4. When the tool reports success, reply with one short sentence confirming the document was
+   reformatted. Do not paste the whole document again.`;
+
+        return { messages: [{ role: "user", content: { type: "text", text: prompt } }] };
+    },
+);
+
 // IMPORTANT: with the stdio transport, stdout carries the protocol messages themselves.
 // Never console.log in a stdio server (it would corrupt them): use console.error for logs.
 console.error(`DocumentMCP starting with ${Object.keys(docs).length} documents`);
