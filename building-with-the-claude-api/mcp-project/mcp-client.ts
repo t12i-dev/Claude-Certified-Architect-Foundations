@@ -39,6 +39,19 @@ export class MCPClient {
         return (await this.client.callTool({ name, arguments: input })) as CallToolResult;
     }
 
+    // Reads one resource and parses it by MIME type: JSON -> object, anything else -> string.
+    // A failure (unknown URI, server error) rejects: resources have no isError.
+    async readResource(uri: string): Promise<unknown> {
+        this.assertConnected();
+        const { contents } = await this.client.readResource({ uri });
+        const item = contents[0] as { text?: string; mimeType?: string } | undefined;
+        if (!item) throw new Error(`Resource ${uri} returned no contents`);
+        if (typeof item.text !== "string") {
+            throw new Error(`Resource ${uri} is binary (${item.mimeType ?? "unknown type"}): not supported here`);
+        }
+        return item.mimeType === "application/json" ? JSON.parse(item.text) : item.text;
+    }
+
     async close(): Promise<void> {
         if (!this.connected) return;
         this.connected = false;

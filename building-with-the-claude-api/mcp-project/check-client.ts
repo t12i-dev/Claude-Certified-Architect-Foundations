@@ -11,6 +11,10 @@ try {
 
     const result = await mcp.callTool("read_doc_contents", { doc_id: "report.pdf" });
     console.log("tool_result content:", JSON.stringify(toToolResultContent(result)));
+
+    // Resources: the client parses by MIME type (JSON -> object, text -> string)
+    console.log("list resource (parsed JSON):", await mcp.readResource("docs://documents"));
+    console.log("doc resource (plain text):", await mcp.readResource("docs://documents/report.pdf"));
 } finally {
     await mcp.close();
 }
