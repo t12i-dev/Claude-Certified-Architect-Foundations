@@ -6,9 +6,15 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["*.ts", "tool-use/**/*.ts", "mcp-project/**/*.ts", "prompt-engineering/**/*.ts"],
-  "exclude": ["node_modules", "venv"]
+  "include": [
+    "lib.ts",
+    "tool-use/**/*.ts",
+    "features/**/*.ts",
+    "mcp-project/**/*.ts",
+    "workflows/**/*.ts"
+  ]
 }
